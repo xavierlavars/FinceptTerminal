@@ -1,0 +1,34 @@
+{
+  "_comment": "Macro target -> US-listed instrument used when a story is about a theme rather than a company. 'bullish' is bought when the event direction is bullish for the theme; 'bearish' is bought when the event is bearish for the theme (defensive or inverse exposure). Empty means: log only, do not trade.",
+  "us_equities":      {"bullish": "SPY",  "bearish": ""},
+  "us_treasuries":    {"bullish": "TLT",  "bearish": ""},
+  "usd":              {"bullish": "UUP",  "bearish": ""},
+  "yen":              {"bullish": "FXY",  "bearish": ""},
+  "euro":             {"bullish": "FXE",  "bearish": ""},
+  "gold":             {"bullish": "GLD",  "bearish": ""},
+  "oil":              {"bullish": "USO",  "bearish": ""},
+  "natural_gas":      {"bullish": "UNG",  "bearish": ""},
+  "crypto_btc":       {"bullish": "IBIT", "bearish": ""},
+  "semis":            {"bullish": "SMH",  "bearish": ""},
+  "banks":            {"bullish": "KBE",  "bearish": ""},
+  "energy":           {"bullish": "XLE",  "bearish": ""},
+  "defense":          {"bullish": "ITA",  "bearish": ""},
+  "airlines":         {"bullish": "JETS", "bearish": ""},
+  "homebuilders":     {"bullish": "XHB",  "bearish": ""},
+  "china_equities":   {"bullish": "FXI",  "bearish": ""},
+  "japan_equities":   {"bullish": "EWJ",  "bearish": ""},
+  "europe_equities":  {"bullish": "VGK",  "bearish": ""},
+  "india_equities":   {"bullish": "INDA", "bearish": ""},
+  "emerging_markets": {"bullish": "EEM",  "bearish": ""},
+  "volatility":       {"bullish": "",     "bearish": ""},
+
+  "_event_overrides_comment": "Some event types imply a theme direction regardless of the story's stated direction. conflict_escalation is bullish for defense, gold and oil even though it is 'bearish' news.",
+  "_event_overrides": {
+    "conflict_escalation":   {"defense": "bullish", "gold": "bullish", "oil": "bullish", "us_equities": "bearish"},
+    "conflict_deescalation": {"oil": "bearish", "defense": "bearish", "us_equities": "bullish"},
+    "central_bank_hawkish":  {"usd": "bullish", "yen": "bullish", "euro": "bullish", "us_treasuries": "bearish", "gold": "bearish"},
+    "central_bank_dovish":   {"usd": "bearish", "yen": "bearish", "euro": "bearish", "us_treasuries": "bullish", "gold": "bullish"},
+    "sanctions":             {"oil": "bullish"},
+    "outage_or_cyber":       {"crypto_btc": "bearish"}
+  }
+}

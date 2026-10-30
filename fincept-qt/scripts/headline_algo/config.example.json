@@ -1,0 +1,33 @@
+{
+  "portfolio_name": "Systematic Paper",
+  "poll_interval_sec": 30,
+  "cluster_time_range": "6H",
+  "cluster_limit": 40,
+  "use_geopolitics_feed": false,
+  "daily_note": true,
+  "risk": {
+    "max_order_value": 10000,
+    "max_order_quantity": 1000,
+    "max_open_positions": 8,
+    "daily_loss_limit": 2000,
+    "per_symbol_cooldown_min": 240
+  },
+  "signal": {
+    "min_sources": 2,
+    "min_confidence": 0.6,
+    "min_confidence_macro": 0.7,
+    "max_stale_move_pct": 1.5,
+    "long_only": true
+  },
+  "exit": {
+    "stop_loss_pct": 2.0,
+    "take_profit_pct": 4.0,
+    "max_hold_hours": 48
+  },
+  "extract": {
+    "backend": "rules",
+    "model": "sonnet",
+    "anthropic_model": "claude-sonnet-5-5",
+    "llm_min_sources": 2
+  }
+}
