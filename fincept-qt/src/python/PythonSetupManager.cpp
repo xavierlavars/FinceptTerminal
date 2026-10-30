@@ -697,6 +697,32 @@ QString PythonSetupManager::lock_path(const QString& venv_name) const {
     return install_dir() + "/" + venv_name + "/requirements.lock";
 }
 
+// uv 0.7.x parses the value of `-c/--constraint` as a whitespace-separated list,
+// so a lock file under a path such as "~/Library/Application Support/..." (the
+// default on macOS) reaches uv as two broken fragments and the install fails
+// with "File not found: Support/...". `-r` does not have this problem. Work
+// around it by copying the lock to a whitespace-free temp path when needed.
+// Returns the original path when it is already safe or when the copy fails,
+// so uv then reports the real error.
+static QString psm_constraint_path_for_uv(const QString& lock, const QString& venv_name) {
+    const auto has_ws = [](const QString& s) {
+        return std::any_of(s.cbegin(), s.cend(), [](QChar c) { return c.isSpace(); });
+    };
+    if (!has_ws(lock))
+        return lock;
+    const QString tmp_dir = QDir::tempPath();
+    if (has_ws(tmp_dir))
+        return lock;
+    const QString safe = tmp_dir + "/fincept-" + venv_name + "-constraints.lock";
+    QFile::remove(safe);
+    if (!QFile::copy(lock, safe)) {
+        LOG_WARN(kPsmTag, QString("Could not copy %1 to %2 — passing the original path to uv").arg(lock, safe));
+        return lock;
+    }
+    LOG_INFO(kPsmTag, QString("Lock path contains whitespace — passing uv a copy at %1").arg(safe));
+    return safe;
+}
+
 bool PythonSetupManager::venv_valid(const QString& venv_name) const {
     if (!QFileInfo::exists(python_path(venv_name)))
         return false;
@@ -2151,7 +2177,7 @@ void PythonSetupManager::lane_install_core(int lane) {
                               QStringLiteral("-r"),
                               find_requirements_file(L.core_file),
                               QStringLiteral("-c"),
-                              lock_path(L.venv),
+                              psm_constraint_path_for_uv(lock_path(L.venv), L.venv),
                               QStringLiteral("-v")};
     start_step(
         uv_path(), args, opts,
