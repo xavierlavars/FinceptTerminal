@@ -165,6 +165,19 @@ class AsyncDispatch {
             return;
         }
 
+        if (!target->thread()->eventDispatcher()) {
+            // The target lives on a thread that is not running an event loop —
+            // typically a lazily created singleton whose first touch came from
+            // a QThreadPool worker (see core/thread/MainThreadPin.h). A queued
+            // call would never execute and the tool would sit until its
+            // watchdog fired, so fail fast with a diagnosable error instead.
+            resolve(ToolResult::fail(
+                QStringLiteral("internal error: %1 lives on a thread without an event loop (it was first "
+                               "created off the main thread) — pin it with pin_singleton_to_main_thread()")
+                    .arg(QString::fromLatin1(target->metaObject()->className()))));
+            return;
+        }
+
         QMetaObject::invokeMethod(
             target, [body = std::forward<BodyFn>(body), resolve]() mutable { body(resolve); }, Qt::QueuedConnection);
     }

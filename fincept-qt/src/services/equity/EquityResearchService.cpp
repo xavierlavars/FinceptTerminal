@@ -1,6 +1,8 @@
 // src/services/equity/EquityResearchService.cpp
 #include "services/equity/EquityResearchService.h"
 
+#include "core/thread/MainThreadPin.h"
+
 #include "core/logging/Logger.h"
 #include "python/PythonRunner.h"
 #include "storage/cache/CacheManager.h"
@@ -189,6 +191,8 @@ bool equity_svc_inflight_busy(const QHash<QString, qint64>& inflight, const QStr
 // ── Singleton ─────────────────────────────────────────────────────────────────
 EquityResearchService& EquityResearchService::instance() {
     static EquityResearchService inst;
+    static const bool pinned = (fincept::pin_singleton_to_main_thread(&inst), true);
+    Q_UNUSED(pinned);
     return inst;
 }
 

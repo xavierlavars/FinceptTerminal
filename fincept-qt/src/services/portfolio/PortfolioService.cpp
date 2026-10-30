@@ -8,6 +8,8 @@
 //   - PortfolioService_ImportExport.cpp — CSV/JSON round-trip
 #include "services/portfolio/PortfolioService.h"
 
+#include "core/thread/MainThreadPin.h"
+
 #include "core/logging/Logger.h"
 #include "services/sectors/SectorResolver.h"
 #include "storage/repositories/PortfolioRepository.h"
@@ -87,6 +89,8 @@ namespace psd = portfolio_service_detail;
 
 PortfolioService& PortfolioService::instance() {
     static PortfolioService s;
+    static const bool pinned = (fincept::pin_singleton_to_main_thread(&s), true);
+    Q_UNUSED(pinned);
     return s;
 }
 

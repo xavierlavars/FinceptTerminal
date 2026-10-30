@@ -1,5 +1,7 @@
 #include "services/equity/MarketSentimentService.h"
 
+#include "core/thread/MainThreadPin.h"
+
 #include "core/logging/Logger.h"
 #include "services/equity/MarketSentimentSupport.h"
 #include "storage/cache/CacheManager.h"
@@ -42,6 +44,8 @@ QByteArray variant_to_json_bytes(const QVariant& value) {
 
 MarketSentimentService& MarketSentimentService::instance() {
     static MarketSentimentService service;
+    static const bool pinned = (fincept::pin_singleton_to_main_thread(&service), true);
+    Q_UNUSED(pinned);
     return service;
 }
 

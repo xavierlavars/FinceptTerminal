@@ -1,5 +1,7 @@
 #include "services/databento/DatabentoService.h"
 
+#include "core/thread/MainThreadPin.h"
+
 #include "core/logging/Logger.h"
 #include "python/PythonRunner.h"
 #include "storage/secure/SecureStorage.h"
@@ -120,6 +122,8 @@ std::vector<double> db_monthly_rate_strip(const QHash<QString, QMap<QString, dou
 
 DatabentoService& DatabentoService::instance() {
     static DatabentoService inst;
+    static const bool pinned = (fincept::pin_singleton_to_main_thread(&inst), true);
+    Q_UNUSED(pinned);
     return inst;
 }
 

@@ -1,6 +1,8 @@
 // src/services/ai_quant_lab/AIQuantLabService.cpp
 #include "services/ai_quant_lab/AIQuantLabService.h"
 
+#include "core/thread/MainThreadPin.h"
+
 #include "core/config/AppPaths.h"
 #include "core/logging/Logger.h"
 #include "python/PythonRunner.h"
@@ -32,6 +34,8 @@ QString aiq_cache_prefix(const QString& module_id) {
 // ── Singleton ────────────────────────────────────────────────────────────────
 AIQuantLabService& AIQuantLabService::instance() {
     static AIQuantLabService inst;
+    static const bool pinned = (fincept::pin_singleton_to_main_thread(&inst), true);
+    Q_UNUSED(pinned);
     return inst;
 }
 

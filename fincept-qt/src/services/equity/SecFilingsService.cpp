@@ -1,6 +1,8 @@
 // src/services/equity/SecFilingsService.cpp
 #include "services/equity/SecFilingsService.h"
 
+#include "core/thread/MainThreadPin.h"
+
 #include "core/logging/Logger.h"
 #include "python/PythonRunner.h"
 #include "storage/cache/CacheManager.h"
@@ -100,6 +102,8 @@ bool sec_svc_unwrap(const QString& blob, SecSectionData& out) {
 
 SecFilingsService& SecFilingsService::instance() {
     static SecFilingsService inst;
+    static const bool pinned = (fincept::pin_singleton_to_main_thread(&inst), true);
+    Q_UNUSED(pinned);
     return inst;
 }
 
